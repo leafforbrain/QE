@@ -1,0 +1,34 @@
+&CONTROL
+calculation = 'scf',
+title = 'PbCl2 potential curve',
+nstep = 100,
+outdir='/home/nikita/QE/Output',
+prefix = 'PbCl2-A0'
+pseudo_dir='/home/nikita/QE/q-e/pseudo/PBEsol/',
+/
+&SYSTEM
+ibrav = 8 !Orthorhombic P
+space_group = 62, !Pnma
+A = 7.619
+B = 9.043
+C = 4.5336
+nat = 3, !inequivalent atoms, coz space group is set
+ntyp = 2,
+ecutwfc = 80,
+ecutrho = 400,
+occupations = 'fixed'
+/
+&ELECTRONS
+conv_thr = 1.0d-6
+/
+ATOMIC_SPECIES
+Pb 207.2 Pb.pbesol-dn-kjpaw_psl.1.0.0.UPF
+Cl 35.45150 Cl.pbesol-n-kjpaw_psl.1.0.0.UPF
+
+ATOMIC_POSITIONS crystal_sg
+Pb 0.2611 0.0953 0.25
+Cl 0.857 0.0734 0.25
+Cl 0.4776 0.8386 0.25
+
+K_POINTS automatic
+1 1 1 1 1 1 !be careful
