@@ -53,9 +53,6 @@ class Generator():
             elif 'B = ' in i: self.defaults[1] = i.split()[2]
             elif 'C = ' in i: self.defaults[2] = i.split()[2]
             
-    def valuator(self):
-        self.a = [self.namespace.coefficient*(i-np.median(range(self.namespace.num_of_points))) for i in range(self.namespace.num_of_points)]
-        print(self.a)
 
 if __name__ == "__main__":
     gen = Generator()
