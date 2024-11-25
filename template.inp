@@ -1,17 +1,17 @@
 &CONTROL
 calculation = 'scf',
 title = 'PbCl2 potential curve',
-nstep = 100,
-outdir='/home/nikita/QE/Output',
-prefix = 'PbCl2-A0'
-pseudo_dir='/home/nikita/QE/q-e/pseudo/PBEsol/',
+nstep = 0,
+outdir='$OUTDIR',
+prefix = '$PREFIX'
+pseudo_dir='$PSEUDO_DIR',
 /
 &SYSTEM
 ibrav = 8 !Orthorhombic P
 space_group = 62, !Pnma
-A = 7.619
-B = 9.043
-C = 4.5336
+A = $A !7.619
+B = $B !9.043
+C = $C !4.5336
 nat = 3, !inequivalent atoms, coz space group is set
 ntyp = 2,
 ecutwfc = 80,
