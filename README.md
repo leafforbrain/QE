@@ -5,7 +5,7 @@
     python gen.py **kwargs
 ===================================================================================================================================
         kwarg             Expected       Type                       Meaning                                          Default
-===================================================================================================================================
+-----------------------------------------------------------------------------------------------------------------------------------
     --cores|-c              value      :integer      Number of cores which will be used to MPI calculation,            max  
                                                      default value will apply argument --oversubscribe to 
                                                      MPI process, whereby max number of cores will be in work.       
