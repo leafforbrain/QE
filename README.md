@@ -2,8 +2,9 @@ Quntum Espresso input generator for SCF calculations of potential curves.
 ! THIS README WILL BE COMPLETED SOON !
 # Usage: 
 #    python gen.py **kwargs
-        kwarg             Expected       Type                       Meaning                                          Default
 -----------------------------------------------------------------------------------------------------------------------------------
+        kwarg             Expected       Type                       Meaning                                          Default
+
     --cores|-c              value      :integer      Number of cores which will be used to MPI calculation,            max  
                                                      default value will apply argument --oversubscribe to 
                                                      MPI process, whereby max number of cores will be in work.                  
@@ -14,4 +15,5 @@ Quntum Espresso input generator for SCF calculations of potential curves.
     --num_of_points|-n      value        :odd        Variation volume. (Only odd numbers)                               11
     --prefix|-p             value       :string      Prefix to all files, including .inp and .out files.               
     --pseudo_dir|-pd      directory     :string      Directory with pseudopotentials.                              ~/q-e/pseudo
+-----------------------------------------------------------------------------------------------------------------------------------
 
