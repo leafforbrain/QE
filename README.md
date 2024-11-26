@@ -1,7 +1,7 @@
-Quntum Espresso input generator for SCF calculations of potential curves. 
- ! THIS README WILL BE COMPLETED SOON ! \n
- Usage: \n
-    \t python gen.py **kwargs
+#Quntum Espresso input generator for SCF calculations of potential curves. 
+# ! THIS README WILL BE COMPLETED SOON ! \n
+# Usage: \n
+#    \t python gen.py **kwargs
  
 
         kwarg             Expected       Type                       Meaning                                          Default
