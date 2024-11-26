@@ -1,6 +1,6 @@
 Quntum Espresso input generator for SCF calculations of potential curves. 
-# ! THIS README WILL BE COMPLETED SOON !
-#
+! THIS README WILL BE COMPLETED SOON !
+
 # Usage: 
 #    python gen.py **kwargs
 #
