@@ -6,27 +6,29 @@ It makes a bunch of files in working directory, each file has information about 
 Also it creates .sh file for automatic launch.
 
 Usage:
-    python gen.py **kwargs
+    python gen.py **options
 ===================================================================================================================================
-        kwarg             Expected       Type                       Meaning                                          Default
+        Option             Expected       Type                       Meaning                                         Default
 ===================================================================================================================================
-    --cores|-c              value      :integer      Number of cores which will be used to MPI calculation,            max  
-                                                     default value will apply argument --oversubscribe to 
-                                                     MPI process, whereby max number of cores will be in work.       
------------------------------------------------------------------------------------------------------------------------------------            
+    --cores|-c              value      :integer      Number of cores which will be used to MPI calculation.            max        
+-----------------------------------------------------------------------------------------------------------------------------------
+    --oversubscribe                     :string      Applying --oversubscribe option to ignore number of CPU's.        no
+-----------------------------------------------------------------------------------------------------------------------------------
     --pwx_path|-pwx     path_to_file    :string      Path to pw.x calculation program.                            ~/q-e/bin/pw.x
+----------------------------------------------------------------------------------------------------------------------------------- 
+    --pseudo_dir|-pd      directory     :string      Directory with pseudopotentials.                              ~/q-e/pseudo/
 ----------------------------------------------------------------------------------------------------------------------------------- 
     --template|-t       path_to_file    :string      Path to template input file.                                 ./template.inp
 -----------------------------------------------------------------------------------------------------------------------------------    
     --output|-o           directory     :string      Path to output directory.                                      ./outputs/
 -----------------------------------------------------------------------------------------------------------------------------------      
-    --coefficient|-c        value      :float(0:1]   Coefficient of variety.                                           0.01
+    --coefficient|-cf       value      :float(0:1]   Coefficient of variety.                                           0.01
 ----------------------------------------------------------------------------------------------------------------------------------- 
     --num_of_points|-n      value        :odd        Variation volume. (Only odd numbers)                               11
 ----------------------------------------------------------------------------------------------------------------------------------- 
     --prefix|-p             value       :string      Prefix to all files, including .inp and .out files.              
 ----------------------------------------------------------------------------------------------------------------------------------- 
-    --pseudo_dir|-pd      directory     :string      Directory with pseudopotentials.                              ~/q-e/pseudo
+    --collect-energy|-col   yes/no      :string      Launch QE Energy Collector after calculation                       yes
 ===================================================================================================================================
 
 Read more on github: https://github.com/leafforbrain/QE
@@ -40,11 +42,8 @@ import sys, os, shutil
 class Generator():
 
 #  Attributes:
-    NUM_OF_CORES = None
-    PWX_PATH = None
+
     INPUT_TEMPLATE = None
-    OUTPUT_FILE = None
-    
     coeffs = []
     defaults = [None, None, None]
     a, b, c = None, None, None
@@ -57,7 +56,8 @@ class Generator():
     def create_argparser(self):    
         self.argparser = argparse.ArgumentParser()
         
-        self.argparser.add_argument('-c', '--cores', default='max')
+        self.argparser.add_argument('-c', '--cores', default=os.cpu_count(), type=int)
+        self.argparser.add_argument('--oversubscribe', action='store_true')
         self.argparser.add_argument('-pwx', '--pwx_path', default='~/q-e/bin/pw.x', type=str)
         self.argparser.add_argument('-pd', '--pseudo_dir', default='~/q-e/pseudo/', type=str)
         self.argparser.add_argument('-t', '--template', default='template.inp', type=str)
@@ -65,6 +65,7 @@ class Generator():
         self.argparser.add_argument('-cf', '--coefficient', default=0.01, type=float)
         self.argparser.add_argument('-n', '--num_of_points', default=11, type=int)
         self.argparser.add_argument('-p', '--prefix', default='', type=str)
+        self.argparser.add_argument('-col', '--collect_energy', default='yes', type=str)
 
     def collect_args(self):
         self.namespace = self.argparser.parse_args(sys.argv[1:])
@@ -122,27 +123,23 @@ class Generator():
             file.close()
             
     def generate_launcher(self):
-            file = open('launch.sh', 'w')
-            if self.namespace.cores == 'max':
-                for i in os.listdir('./inputs'):
-                    file.write(
-                        "mpirun -n 1 --host localhost:12 --oversubscribe " +
-                        self.namespace.pwx_path + " < ./inputs/" + str(i) + " | tee " +
-                        self.namespace.output + i.replace('.inp', '.out') + "\n"
-                    )
-            elif self.namespace.cores != 'max': 
-                if self.namespace.cores == '1':
-                    for i in os.listdir('./inputs'):
-                        file.write(
-                            self.namespace.pwx_path + " < ./inputs/" + str(i) + " | tee " + self.namespace.output + i.replace('.inp', '.out') + "\n"
-                        )
-                else:
-                    for i in os.listdir('./inputs'):
-                        file.write(
-                            "mpirun -n " + str(self.namespace.cores) + " --host localhost:12 --oversubscribe " +
-                            self.namespace.pwx_path + " < ./inputs/" + str(i) + " | tee " + self.namespace.output + i.replace('.inp', '.out') + "\n"
-                        )
-            file.close()
+        file = open('launch.sh', 'w')
+        for i in os.listdir('./inputs'):
+            if self.namespace.cores > 1:
+                run_command = 'mpirun -n {cores} --host localhost:{cores} '.format(cores = str(self.namespace.cores))
+            else: run_command = ''
+            if self.namespace.oversubscribe:
+                run_command += '--oversubscribe '
+            else: None
+            run_command += '{pwx_path} < ./inputs/{inp_f} | tee {output}{out_f}\n'.format(pwx_path = self.namespace.pwx_path, 
+                                                                                        inp_f = i,
+                                                                                        output = self.namespace.output,
+                                                                                        out_f = i.replace('.inp', '.out'))
+            file.write(run_command)
+        if self.namespace.collect_energy == 'yes':
+            file.write('python QE_Energy_Collector.py --output {output} --prefix {prefix}'.format(output = self.namespace.output,
+                                                                                                  prefix = self.namespace.prefix))
+        file.close()
 
 if __name__ == "__main__":
     gen = Generator()
