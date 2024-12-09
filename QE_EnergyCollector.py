@@ -18,7 +18,7 @@ class Collector():
 
     def extract_energies(self):
         file = open('collected_energies.txt', 'w')
-        file.write('Expansion, %\t\tEnergy, kJ/mole\n')
+        file.write('Expansion, %\t\tEnergy, eV\n')
         
         result = ''
         for i in os.listdir(self.namespace.output):
@@ -26,11 +26,10 @@ class Collector():
             with open(self.namespace.output + i) as output:
                 __parsed = [line.rstrip() for line in output]
             for k in __parsed:
-                if all(x in i.split() for x in ['!','total','energy','=']):
-                    print('check!')
-                    print(i)
-                    result += '\t\t' + str(round(float(i.split()[-2])*1312.7496997450642, 6)) + '\n'
+                if all(x in k.split() for x in ['!','total','energy','=']):
+                    result += '\t\t\t\t' + str(round(float(k.split()[-2])*13.605691930242388, 6)) + '\n'
             file.write(result)
+            result = ''
         file.close()
         
 if __name__ == '__main__':
